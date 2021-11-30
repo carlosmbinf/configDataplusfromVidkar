@@ -5,7 +5,7 @@ var cron = require("node-cron");
 var fs = require( "fs");
 
 let opts = {
-    endpoint: "ws://localhost:3000/websocket",
+    endpoint: "ws://vidkar.sytes.net:3000/websocket",
     SocketConstructor: ws,
     reconnectInterval: 10000,
 };
@@ -23,7 +23,7 @@ server.on('connected', async () => {
     //    await server.collection('users').filter(user => user.vpn == true).fetch()
 
         usuariosVPN && usuariosVPN.forEach((element,index) => {
-            result =  element.username?`${result}${element.username} l2tpd ${element.passvpn?element.passvpn:"123"} 192.168.18.${index+2}\n`:result
+            result = element.username ? `${result}${element.username} l2tpd ${element.passvpn ? element.passvpn : "123"} ${element.vpnip ? '192.168.18.' + element.vpnip : "*"}\n` : result
        });
         console.log(result);
         // server.disconnect()
@@ -52,10 +52,6 @@ server.on('error', (e) => {
     console.error(e);
 });
 
-server.on('ready', (e) => {
-    // global errors from server
-    console.error(e);
-});
 
 cron
     .schedule(
