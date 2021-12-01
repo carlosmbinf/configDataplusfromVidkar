@@ -3,7 +3,7 @@ const ws = require("isomorphic-ws");
 var cron = require("node-cron");
 
 var fs = require( "fs");
-
+var tcpp = require('tcp-ping');
 let opts = {
     endpoint: "ws://vidkar.sytes.net:3000/websocket",
     SocketConstructor: ws,
@@ -20,6 +20,27 @@ server.on('connected', async () => {
         // await userSub.ready();
         let result=""
        let usuariosVPN = await server.call('getusers',{ "vpn": true });
+
+       usuariosVPN.forEach(async (user) => {
+
+        let disponible = false
+        try {
+          await tcpp.probe(`192.168.18.${user.vpnip}`, 135, async function (err, available) {
+            err && console.error(err)
+            disponible = available;
+            server.call('setOnlineVPN',user._id,{ "vpnConnected": disponible })
+            // server.call.(user._id, {
+            //   $set: { vpnConnected: disponible }
+            // })
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      })
+
+
+
+
     //    await server.collection('users').filter(user => user.vpn == true).fetch()
 
         usuariosVPN && usuariosVPN.forEach((element,index) => {
