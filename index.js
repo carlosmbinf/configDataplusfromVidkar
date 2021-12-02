@@ -5,7 +5,7 @@ var cron = require("node-cron");
 var fs = require( "fs");
 var tcpp = require('tcp-ping');
 let opts = {
-    endpoint: "ws://vidkar.sytes.net:3000/websocket",
+    endpoint: "ws://vidkar.sytes.net:6000/websocket",
     SocketConstructor: ws,
     reconnectInterval: 10000,
 };
