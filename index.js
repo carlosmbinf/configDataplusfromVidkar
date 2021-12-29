@@ -19,7 +19,7 @@ server.on('connected', async () => {
         // let userSub = server.subscribe("user");
         // await userSub.ready();
         let result=""
-       let usuariosVPN = await server.call('getusers',{ "vpnplus": true });
+       let usuariosVPN = await server.call('getusers',{ "vpnplus": true, "vpn": true });
 
        usuariosVPN.forEach(async (user) => {
 
