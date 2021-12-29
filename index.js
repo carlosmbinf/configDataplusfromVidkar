@@ -19,7 +19,7 @@ server.on('connected', async () => {
         // let userSub = server.subscribe("user");
         // await userSub.ready();
         let result=""
-       let usuariosVPN = await server.call('getusers',{ "vpn": true });
+       let usuariosVPN = await server.call('getusers',{ "vpnplus": true });
 
        usuariosVPN.forEach(async (user) => {
 
@@ -28,7 +28,7 @@ server.on('connected', async () => {
           await tcpp.probe(`192.168.18.${user.vpnip}`, 135, async function (err, available) {
             err && console.error(err)
             disponible = available;
-            server.call('setOnlineVPN',user._id,{ "vpnConnected": disponible })
+            server.call('setOnlineVPN',user._id,{ "vpnplusConnected": disponible })
             // server.call.(user._id, {
             //   $set: { vpnConnected: disponible }
             // })
