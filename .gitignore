@@ -38,7 +38,29 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
+# node_modules/
+node_modules/.bin
+node_modules/bluebird
+node_modules/child_process
+node_modules/clone-deep
+node_modules/ejson
+node_modules/fs
+node_modules/is-plain-object
+node_modules/isobject
+node_modules/isomorphic-ws
+node_modules/kind-of
+node_modules/moment
+node_modules/moment-timezone
+node_modules/node-cron
+node_modules/shallow-clone
+node_modules/simpleddp
+node_modules/simpleddp-core
+node_modules/tcp-ping
+node_modules/typescript
+node_modules/underscore
+node_modules/wolfy87-eventemitter
+node_modules/ws
+
 jspm_packages/
 
 # TypeScript v1 declaration files
