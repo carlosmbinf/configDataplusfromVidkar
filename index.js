@@ -4,7 +4,7 @@ var cron = require("node-cron");
 var fs = require("fs");
 
 let opts = {
-    endpoint: "ws://vidkar.sytes.net:6000/websocket",
+    endpoint: "ws://vidkar.ddns.net:6000/websocket",
     SocketConstructor: ws,
     reconnectInterval: 10000,
 };
