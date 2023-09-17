@@ -38,7 +38,7 @@ bower_components
 build/Release
 
 # Dependency directories
-# node_modules/
+node_modules/
 node_modules/.bin
 node_modules/bluebird
 node_modules/child_process

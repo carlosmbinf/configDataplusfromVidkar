@@ -71,6 +71,9 @@ function parseSingleBlock(block) {
             if (match = line.match(/Mask:(\S+)/)) {
                 inet.mask = match[1];
             }
+            if (match = line.match(/destination [addr\:]?(\S+)/)) {
+                inet.destination = match[1];
+            }
             data.inet = inet;
         } else if(match = line.match(/^\s+inet6\s+/)) { // inet6 fdb2:2c26:f4e4:1:ac21:8c13:fdad:b641  prefixlen 64 ...
             var inet6 = {};

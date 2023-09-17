@@ -9,13 +9,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.7.2",
+    "child_process": "^1.0.2",
     "fs": "0.0.1-security",
+    "ifconfig": "^0.0.1",
+    "ifconfig-linux": "^0.1.2",
     "isomorphic-ws": "^4.0.1",
     "node-cron": "^3.0.0",
     "simpleddp": "^2.2.4",
     "tcp-ping": "^0.1.1",
-    "ws": "^8.3.0",
-    "ifconfig-linux": "^0.1.2"
+    "underscore": "^1.13.6",
+    "ws": "^8.3.0"
   },
   "devDependencies": {
     "typescript": "^4.5.2"
