@@ -71,7 +71,7 @@ ejecutar = async () => {
         console.log('EJECUTANDO');
 
         /////DEVOLVER RESULTADO DE IFCONFIG
-        require('./ifconfig/ifconfig-linux/index')().then(async (element) => {
+        require('./ifconfig/ifconfig-linux/')().then(async (element) => {
 
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
