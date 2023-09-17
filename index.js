@@ -23,12 +23,12 @@ var listadeclientesconectados = []
 server.on('connected', async () => {
     // do something
     console.log("Conectado");
-    
+
 
     //////poniendo a todos en ofline para poner solo los conectados en online
     let user = (await server.call('getusers', { vpn: true }))
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
-    
+
 });
 
 server.on('disconnected', () => {
@@ -46,10 +46,10 @@ cron
     .schedule(
         "*/20 0-59 0-23 1-31 1-12 *",
         async () => {
-            server.connected ? 
-               ejecutar()
-            
-            : server.connect()
+            server.connected ?
+                ejecutar()
+
+                : server.connect()
         },
         {
             scheduled: true,
@@ -59,24 +59,24 @@ cron
     .start();
 
 ejecutar = async () => {
-        try {
+    try {
 
 
-            let userSub = server.subscribe("user",{vpnip:2});
-            await userSub.ready();
-            ////!!!aqui se actualiza LOS MEGAS PARA VIDKAR!!!
-            
-    
+        let userSub = server.subscribe("user", { vpnip: 2 });
+        await userSub.ready();
+        ////!!!aqui se actualiza LOS MEGAS PARA VIDKAR!!!
+
+
         /////TAREA DE 10 SEGUNDOS
         console.log('EJECUTANDO');
-    
+
         /////DEVOLVER RESULTADO DE IFCONFIG
         require('ifconfig-linux')().then(async (element) => {
-    
+
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
             let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true });
-            
+
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
             });
@@ -94,55 +94,56 @@ ejecutar = async () => {
 
             /////LISTA LAS INTERFACES
             let listInterfaces = Object.keys(element)
-    
+
             /////SELECCIONA LAS INTERFACES CON PPP
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
 
-
-            
-              
-                
             ppp.map(async (elementppp) => {
-               await console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
-                ///////SELECCIONA LA IP DEL CLIENTE
-                let cliente =  element[elementppp].inet.destination
-    
-                //////MEGAS GASTADOS
-                let megasGastados =  element[elementppp].tx.bytes 
-    
-                /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
-                listadeclientesconectados.push(cliente)
+                try {
+                    console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
+                    ///////SELECCIONA LA IP DEL CLIENTE
+                    let cliente = element[elementppp].inet.destination
 
-                console.log( cliente)
-                ///////SUMANDOLE EL CONSUMO AL USUARIO
-                let ip = cliente.split(".")[3]
-                let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
-                await server.call('setOnlineVPN', user._id, {
-                    vpnMbGastados: user.vpnMbGastados ?
-                        (consumos[cliente]
-                            ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
-                            : user.vpnMbGastados + megasGastados)
-                        : consumos[cliente]
-                })
+                    //////MEGAS GASTADOS
+                    let megasGastados = element[elementppp].tx.bytes
 
-                ////// CONECTANDO EL USUARIO EN VIDKAR
-                await server.call('setOnlineVPN', user._id, { "vpnplusConnected": true })
-    
-                console.log(`CLIENTE: ${cliente} gasto: ${megasGastados/ 1000000}`);
-                consumos[cliente] = megasGastados
+                    /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
+                    listadeclientesconectados.push(cliente)
+
+                    console.log(cliente)
+                    ///////SUMANDOLE EL CONSUMO AL USUARIO
+                    let ip = cliente.split(".")[3]
+                    let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
+                    await server.call('setOnlineVPN', user._id, {
+                        vpnMbGastados: user.vpnMbGastados ?
+                            (consumos[cliente]
+                                ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
+                                : user.vpnMbGastados + megasGastados)
+                            : consumos[cliente]
+                    })
+
+                    ////// CONECTANDO EL USUARIO EN VIDKAR
+                    await server.call('setOnlineVPN', user._id, { "vpnplusConnected": true })
+
+                    console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1000000}`);
+                    consumos[cliente] = megasGastados
+
+                } catch (error) {
+                    console.log(error)
+                }
 
 
 
             })
-    
+
             ////////DEVUELVE LA IP DE LOS DESCONECTADOS
             let array1 = Object.keys(consumos).filter(function (val) {
                 return listadeclientesconectados.indexOf(val.toString()) == -1;
             });
-    
+
             console.log(consumos);
-    
+
             console.log("DESCONECTADOS: " + array1);
             ////// QUITA LOS USUARIOS DESCONECTADOS Y ACTUALIZA LOS MEGAS EN VIDKAR
             array1.length > 0 && (
@@ -160,19 +161,19 @@ ejecutar = async () => {
 
                 })
             )
-    
+
             //limpia cache de conectados
             listadeclientesconectados = []
-    
+
 
         });
-    
-            // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
-    
-        } catch (error) {
-            console.error(error);
-        }
+
+        // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
+
+    } catch (error) {
+        console.error(error);
     }
+}
 
 
 
