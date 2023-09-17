@@ -104,7 +104,7 @@ ejecutar = async () => {
               
                 
             ppp.map(async (elementppp) => {
-                console.log(`elemento ${elementppp}: ` + element[elementppp])
+               await console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                 ///////SELECCIONA LA IP DEL CLIENTE
                 let cliente =  element[elementppp].inet.destination
     
