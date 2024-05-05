@@ -15,7 +15,7 @@ var server = new simpleDDP(opts);
 const ejecutarScript = async (script) => {
     var exec = require('child_process').exec;
     return new Promise(function (resolve, reject) {
-        exec(cmd, function(error, stdout, stderr) {
+        exec(script, function(error, stdout, stderr) {
             if (error) {
                 reject(error);
             } else {
