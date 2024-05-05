@@ -124,30 +124,38 @@ ejecutar = async () => {
                     let megasGastados = element[elementppp].tx.bytes
 
                     /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
-                    listadeclientesconectados.push(cliente)
+                    
 
                     console.log(cliente)
                     ///////SUMANDOLE EL CONSUMO AL USUARIO
                     let ip = cliente.split(".")[3]
                     let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
-                    await server.call('setOnlineVPN', user._id, {
-                        vpnMbGastados: user.vpnMbGastados ?
-                            (consumos[cliente]
-                                ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
-                                : user.vpnMbGastados + megasGastados)
-                            : consumos[cliente]
-                    })
 
-                    ////// CONECTANDO EL USUARIO EN VIDKAR
-                    await server.call('setOnlineVPN', user._id, { "vpnplusConnected": true })
-
-                    console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1000000}`);
-                    consumos[cliente] = megasGastados
-
+                    //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
                     if(user.vpn == false){
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
+                    }else{
+                        listadeclientesconectados.push(cliente)
+                        await server.call('setOnlineVPN', user._id, {
+                            vpnMbGastados: user.vpnMbGastados ?
+                                (consumos[cliente]
+                                    ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
+                                    : user.vpnMbGastados + megasGastados)
+                                : consumos[cliente]
+                        })
+    
+                        ////// CONECTANDO EL USUARIO EN VIDKAR
+                        await server.call('setOnlineVPN', user._id, { "vpnplusConnected": true })
+    
+                        console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1000000}`);
+                        consumos[cliente] = megasGastados
+
+                        
                     }
+
+                    
+
 
                 } catch (error) {
                     console.log(error)
