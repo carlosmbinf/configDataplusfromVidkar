@@ -12,6 +12,20 @@ var server = new simpleDDP(opts);
 
 
 
+const ejecutarScript = async (script) => {
+    var exec = require('child_process').exec;
+    return new Promise(function (resolve, reject) {
+        exec(cmd, function(error, stdout, stderr) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(stdout);
+            }
+        });
+    }).then((result) => {
+        return console.log(result)
+    });
+};
 
 /////LISTA DE MEGAS CONSUMIDOS POR USUARIOS
 var consumos = {}
@@ -130,6 +144,11 @@ ejecutar = async () => {
                     console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1000000}`);
                     consumos[cliente] = megasGastados
 
+                    if(user.vpn == false){
+                        console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
+                        await ejecutarScript('ip link delete ' + elementppp);
+                    }
+
                 } catch (error) {
                     console.log(error)
                 }
@@ -177,94 +196,3 @@ ejecutar = async () => {
 }
 
 
-
-// const simpleDDP = require("simpleddp"); // nodejs
-// const ws = require("isomorphic-ws");
-// var cron = require("node-cron");
-
-// var fs = require("fs");
-// var tcpp = require('tcp-ping');
-// let opts = {
-//     endpoint: "ws://vidkar.sytes.net:6000/websocket",
-//     SocketConstructor: ws,
-//     reconnectInterval: 10000,
-// };
-// const server = new simpleDDP(opts);
-
-// server.on('connected', async () => {
-//     // do something
-//     console.log("Conectado");
-//     try {
-
-//         // let userSub = server.subscribe("user");
-//         // await userSub.ready();
-//         let result = ""
-//         let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true });
-
-//         await usuariosVPN.map(async (user) => {
-
-//             let disponible = false
-//             try {
-//                 await tcpp.probe(`192.168.18.${user.vpnip}`, 135, async function (err, available) {
-//                     err && console.error(err)
-//                     disponible = available;
-//                     server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
-// 		console.log(`192.168.18.${user.vpnip} ${user.username} conected: ${disponible}`)
-//                     // server.call.(user._id, {
-//                     //   $set: { vpnConnected: disponible }
-//                     // })
-
-//                 })
-//             } catch (error) {
-//                 console.error(error)
-//             }
-//         })
-
-
-
-
-//         //    await server.collection('users').filter(user => user.vpn == true).fetch()
-
-//         await usuariosVPN.forEach((element, index) => {
-//             result = element.username ? `${result}${element.username} l2tpd ${element.passvpn ? element.passvpn : "123"} ${element.vpnip ? '192.168.18.' + element.vpnip : "*"}\n` : result
-//         });
-//         await console.log(result);
-//         // server.disconnect()
-
-//         await fs.writeFile("/etc/ppp/chap-secrets", result, (err) => {
-//             if (err) console.error("Error: " + err);
-//             console.info("Datos Guardados Correctamente!!!")
-//         });
-
-
-//         await server.disconnect()
-//     } catch (error) {
-//         console.error(error);
-//     }
-
-
-// });
-
-// server.on('disconnected', () => {
-//     // for example show alert to user
-//     console.info("Desconectado");
-// });
-
-// server.on('error', (e) => {
-//     // global errors from server
-//     console.error(e);
-// });
-
-
-// cron
-//     .schedule(
-//         "*/20 0-59 0-23 1-31 1-12 *",
-//         async () => {
-//             server.connect()
-//         },
-//         {
-//             scheduled: true,
-//             timezone: "America/Havana",
-//         }
-//     )
-//     .start();
