@@ -109,7 +109,20 @@ ejecutar = async () => {
 
             /////LISTA LAS INTERFACES
             let listInterfaces = Object.keys(element)
+            
+            
+            // si estado es PENTIENTE_A_REINICIAR 
+            //ejecutarScript(`service ipsec restart`)
+            //ejecutarScript(`service xl2tpd restart`)
 
+            //  ipServer = 
+            // const servidor = await server.call('getServer', "")
+            // if(server.ip){
+
+            // }
+
+            console.log("listInterfaces",listInterfaces);
+            console.log("process.env",process.env);
             /////SELECCIONA LAS INTERFACES CON PPP
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
