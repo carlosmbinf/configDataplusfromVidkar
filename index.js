@@ -114,6 +114,8 @@ ejecutar = async () => {
             // si estado es PENTIENTE_A_REINICIAR 
             //ejecutarScript(`service ipsec restart`)
             //ejecutarScript(`service xl2tpd restart`)
+            //actualizarEstadoServer: function (serverId, state)
+            //getServer: function (ip)
 
             //  ipServer = 
             // const servidor = await server.call('getServer', "")
@@ -121,7 +123,7 @@ ejecutar = async () => {
 
             // }
 
-            console.log("listInterfaces",listInterfaces);
+            console.log("listInterfaces",element);
             console.log("process.env",process.env);
             /////SELECCIONA LAS INTERFACES CON PPP
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
