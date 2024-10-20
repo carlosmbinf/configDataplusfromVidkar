@@ -128,7 +128,7 @@ ejecutar = async () => {
             // }
 
             /////SELECCIONA LAS INTERFACES DE SERVIDOR
-            let interfaceServer = listInterfaces.filter(interface => interface.includes("ens"))
+            let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
             let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
 
             console.log("ipsServer",ipServer);
@@ -153,10 +153,10 @@ ejecutar = async () => {
             }
 
             
-            let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
+            let ppp = await listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
 
-            ppp.map(async (elementppp) => {
+            await ppp.map(async (elementppp) => {
                 try {
                     console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                     ///////SELECCIONA LA IP DEL CLIENTE
@@ -208,13 +208,13 @@ ejecutar = async () => {
             })
 
             ////////DEVUELVE LA IP DE LOS DESCONECTADOS
-            let array1 = Object.keys(consumos).filter(function (val) {
+            let array1 = await Object.keys(consumos).filter(function (val) {
                 return listadeclientesconectados.indexOf(val.toString()) == -1;
             });
 
-            console.log(consumos);
+            await console.log(consumos);
 
-            console.log("DESCONECTADOS: " + array1);
+            await console.log("DESCONECTADOS: " + array1);
             ////// QUITA LOS USUARIOS DESCONECTADOS Y ACTUALIZA LOS MEGAS EN VIDKAR
             array1.length > 0 && (
                 array1.map(async (a) => {
