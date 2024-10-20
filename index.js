@@ -19,7 +19,7 @@ const ejecutarScript = async (script) => {
             if (error) {
                 reject(error);
             } else {
-                console.log("Script ejecutado correctamente");
+                console.log("Script ejecutado correctamente:" , script);
                 console.log("stdout:",stdout);
                 resolve(stdout);
             }
