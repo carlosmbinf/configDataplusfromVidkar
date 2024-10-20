@@ -127,7 +127,7 @@ ejecutar = async () => {
             let interfaceServer = listInterfaces.filter(interface => interface.includes("ens"))
             let ipServer = element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr.addr
 
-            console.log("ipsServer",ipServer);
+            console.log("ipsServer",element[interfaceServer]);
 
             
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
