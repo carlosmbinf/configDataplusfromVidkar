@@ -18,8 +18,12 @@ const ejecutarScript = async (script) => {
         exec(script, function(error, stdout, stderr) {
             if (error) {
                 reject(error);
-            } else {
+            }else {
+                if(stderr){
+                resolve(stderr);
+                }else{
                 resolve(stdout);
+                }
             }
         });
     }).then((result) => {
