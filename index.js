@@ -125,9 +125,23 @@ ejecutar = async () => {
 
             /////SELECCIONA LAS INTERFACES DE SERVIDOR
             let interfaceServer = listInterfaces.filter(interface => interface.includes("ens"))
-            let ipServer = element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
+            let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
 
             console.log("ipsServer",ipServer);
+            let server = (await server.call('getServer', ipServer))
+
+            if (server && server.estado == "PENDIENTE_A_REINICIAR" && server.idUserSolicitandoReinicio) {
+                let idUserSolicitandoReinicio = server.idUserSolicitandoReinicio;
+                await server.call('actualizarEstadoServer', server._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+                try {
+                    await ejecutarScript(`service ipsec restart`)
+                    await ejecutarScript(`service xl2tpd restart`)   
+                    Meteor.call('registrarLog', 'REINICIAR SERVIDOR VPN', idUserSolicitandoReinicio, 'SERVER', 'Se Reinicio el Servidor VPN con IP: ' + ipServer)
+                } catch (error) {
+                    console.log('error',error)
+                    Meteor.call('registrarLog', 'REINICIAR SERVIDOR VPN', idUserSolicitandoReinicio, 'SERVER', 'Se Reinicio el Servidor VPN con IP: ' + ipServer)
+                }
+            }
 
             
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
