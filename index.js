@@ -129,7 +129,8 @@ ejecutar = async () => {
 
             console.log("ipsServer",ipServer);
             let serverVPN = (await server.call('getServer', ipServer))
-
+            await server.call('actualizarEstadoServer', serverVPN._id,{lastUpdate:new Date()}) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+            
             if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" && serverVPN.idUserSolicitandoReinicio) {
                 console.log("SERVERVPN: ", serverVPN)
                 let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
