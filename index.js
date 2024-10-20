@@ -133,7 +133,7 @@ ejecutar = async () => {
             if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" && serverVPN.idUserSolicitandoReinicio) {
                 console.log("SERVERVPN: ", serverVPN)
                 let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
-                await serverVPN.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+                await Meteor.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
                 try {
                     await ejecutarScript(`service ipsec restart`)
                     await ejecutarScript(`service xl2tpd restart`)   
