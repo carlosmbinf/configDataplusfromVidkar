@@ -166,11 +166,11 @@ ejecutar = async () => {
                     let megasGastados = element[elementppp].tx.bytes
 
                     /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
-                    // console.log(cliente)
-                    
                     ///////SUMANDOLE EL CONSUMO AL USUARIO
                     let ip = cliente.split(".")[3]
                     let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
+
+                    console.log("CONECTADO: ", user ? user.username + "-" + cliente : cliente);
 
                     //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
                     if(user.vpn == false || user.desconectarVPN){
