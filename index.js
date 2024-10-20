@@ -128,11 +128,11 @@ ejecutar = async () => {
             let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
 
             console.log("ipsServer",ipServer);
-            let server = (await server.call('getServer', ipServer))
+            let serverVPN = (await server.call('getServer', ipServer))
 
-            if (server && server.estado == "PENDIENTE_A_REINICIAR" && server.idUserSolicitandoReinicio) {
-                let idUserSolicitandoReinicio = server.idUserSolicitandoReinicio;
-                await server.call('actualizarEstadoServer', server._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+            if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" && serverVPN.idUserSolicitandoReinicio) {
+                let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
+                await serverVPN.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
                 try {
                     await ejecutarScript(`service ipsec restart`)
                     await ejecutarScript(`service xl2tpd restart`)   
