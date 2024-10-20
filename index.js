@@ -19,6 +19,8 @@ const ejecutarScript = async (script) => {
             if (error) {
                 reject(error);
             } else {
+                console.log("Script ejecutado correctamente");
+                console.log("stdout:",stdout);
                 resolve(stdout);
             }
         });
@@ -166,7 +168,7 @@ ejecutar = async () => {
                     let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
 
                     //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
-                    if(user.vpn == false){
+                    if(user.vpn == false || user.desconectarVPN){
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
                     }else{
