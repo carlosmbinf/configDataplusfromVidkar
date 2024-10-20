@@ -144,7 +144,7 @@ ejecutar = async () => {
                     server.call('registrarLog', 'Script ejecutado', idUserSolicitandoReinicio, 'SERVER', mensaje)
                 } catch (error) {
                     console.log('error',error)
-                    Meteor.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
+                    server.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
                 }
             }
 
