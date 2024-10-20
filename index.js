@@ -212,12 +212,10 @@ ejecutar = async () => {
                 return listadeclientesconectados.indexOf(val.toString()) == -1;
             });
 
-            await console.log(consumos);
-
-            await console.log("DESCONECTADOS: " + array1);
             ////// QUITA LOS USUARIOS DESCONECTADOS Y ACTUALIZA LOS MEGAS EN VIDKAR
             array1.length > 0 && (
                 array1.map(async (a) => {
+                    await console.log("DESCONECTADO: " + a);
                     let ip = await a.split(".")[3]
                     let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
 
