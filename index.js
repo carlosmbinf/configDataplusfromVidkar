@@ -19,13 +19,11 @@ const ejecutarScript = async (script) => {
             if (error) {
                 reject(error);
             } else {
-                console.log("Script ejecutado correctamente:" , script);
-                console.log("stdout:",stdout);
                 resolve(stdout);
             }
         });
     }).then((result) => {
-        return console.log(result)
+        return result
     });
 };
 
@@ -136,13 +134,16 @@ ejecutar = async () => {
                 console.log("SERVERVPN: ", serverVPN)
                 let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
                 await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+                let script = `service ipsec restart && service xl2tpd restart`
                 try {
-                    await ejecutarScript(`service ipsec restart`)
-                    await ejecutarScript(`service xl2tpd restart`)   
-                    server.call('registrarLog', 'REINICIAR SERVIDOR VPN', idUserSolicitandoReinicio, 'SERVER', 'Se Reinicio el Servidor VPN con IP: ' + ipServer)
+                    
+                    let returnScript = await ejecutarScript(script)
+                    let mensaje = "Script ejecutado: " + script + "\nstdout: " + returnScript + "\nIP SERVER: " + ipServer;
+                    console.log(mensaje);
+                    server.call('registrarLog', 'Script ejecutado', idUserSolicitandoReinicio, 'SERVER', mensaje)
                 } catch (error) {
                     console.log('error',error)
-                    Meteor.call('registrarLog', 'REINICIAR SERVIDOR VPN', idUserSolicitandoReinicio, 'SERVER', 'Se Reinicio el Servidor VPN con IP: ' + ipServer)
+                    Meteor.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
                 }
             }
 
