@@ -174,6 +174,7 @@ ejecutar = async () => {
 
                     //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
                     if(user.vpn == false || user.desconectarVPN){
+                        server.call('updateUsersAll', user._id, { desconectarVPN: false })
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
                     }else{
