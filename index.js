@@ -123,9 +123,13 @@ ejecutar = async () => {
 
             // }
 
-            console.log("listInterfaces",element);
-            console.log("process.env",process.env);
-            /////SELECCIONA LAS INTERFACES CON PPP
+            /////SELECCIONA LAS INTERFACES DE SERVIDOR
+            let interfaceServer = listInterfaces.filter(interface => interface.includes("ens"))
+            let ipServer = element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr.addr
+
+            console.log("ipsServer",ipServer);
+
+            
             let ppp = listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
 
