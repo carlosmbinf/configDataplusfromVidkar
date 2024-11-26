@@ -135,21 +135,29 @@ ejecutar = async () => {
             let serverVPN = (await server.call('getServer', ipServer))
             await server.call('actualizarEstadoServer', serverVPN._id,{lastUpdate:new Date()}) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
             
-            if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" && serverVPN.idUserSolicitandoReinicio) {
-                console.log("SERVERVPN: ", serverVPN)
-                let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
-                await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
-                let script = `service ipsec restart && service xl2tpd restart`
-                try {
+            if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" ) {
+
+                if(!serverVPN.idUserSolicitandoReinicio){
+                    console.log("idUserSolicitandoReinicio = null - SERVERVPN: ", serverVPN)
+                    await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
                     
-                    let returnScript = await ejecutarScript(script)
-                    let mensaje = "Script ejecutado: " + script + "\nstdout: " + returnScript + "\nIP SERVER: " + ipServer;
-                    console.log(mensaje);
-                    server.call('registrarLog', 'Script ejecutado', idUserSolicitandoReinicio, 'SERVER', mensaje)
-                } catch (error) {
-                    console.log('error',error)
-                    server.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
+                }else{
+                    console.log("SERVERVPN: ", serverVPN)
+                    let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
+                    await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+                    let script = `service ipsec restart && service xl2tpd restart`
+                    try {
+                        
+                        let returnScript = await ejecutarScript(script)
+                        let mensaje = "Script ejecutado: " + script + "\nstdout: " + returnScript + "\nIP SERVER: " + ipServer;
+                        console.log(mensaje);
+                        server.call('registrarLog', 'Script ejecutado', idUserSolicitandoReinicio, 'SERVER', mensaje)
+                    } catch (error) {
+                        console.log('error',error)
+                        server.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
+                    }
                 }
+               
             }
 
             
