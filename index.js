@@ -95,7 +95,7 @@ ejecutar = async () => {
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
             let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true });
-            console.log("usuariosVPN", usuariosVPN);
+            // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
             });
