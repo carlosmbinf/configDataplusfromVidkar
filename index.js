@@ -62,7 +62,7 @@ server.on('error', (e) => {
 
 cron
     .schedule(
-        "*/20 0-59 0-23 1-31 1-12 *",
+        "0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
         async () => {
             server.connected ?
                 ejecutar()
