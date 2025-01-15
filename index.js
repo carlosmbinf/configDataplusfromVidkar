@@ -191,7 +191,11 @@ ejecutar = async () => {
             //////RECORRE TODAS LAS INTERFACES
             
             console.log("Se va a recorrer las interfaces para calcular lo gastado");
-            await ppp.for(async (elementppp) => {
+            //ppp.forEach cambiado a for para poder hacer un await
+            for (let index = 0; index < ppp.length; index++) {
+            
+                const elementppp = ppp[index];
+            
                 try {
                     // console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                     ///////SELECCIONA LA IP DEL CLIENTE
@@ -237,21 +241,13 @@ ejecutar = async () => {
                         })
                         console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(megasGastados-consumos[cliente])/1024000} \nGasto total: ${consumo / 1024000} MB`);
                         console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
-                        consumos[cliente] = megasGastados
-
-                        
+                        consumos[cliente] = megasGastados                        
                     }
-
-                    
-
-
                 } catch (error) {
                     console.log(error)
                 }
-
-
-
-            })
+            
+            }
 
             ////////DEVUELVE LA IP DE LOS DESCONECTADOS
             let array1 = await Object.keys(consumos).filter(function (val) {
