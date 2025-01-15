@@ -110,7 +110,7 @@ ejecutar = async () => {
 
         /////DEVOLVER RESULTADO DE IFCONFIG
         var executeCmd = await require('./ifconfig/ifconfig-linux/executeCmd');
-        await executeCmd().then(async (element) => {
+        executeCmd().then(async (element) => {
 
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
@@ -295,11 +295,15 @@ ejecutar = async () => {
             listadeclientesconectados = []
 
             // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
-            
+            validaEjecucion = false
+            console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
+        }).catch((err) => {
+            console.log(err)
+            validaEjecucion = false
+            console.log("Ejecucion finalizada FLAG: " + validaEjecucion + " en ERROR catch");
         });
 
-        validaEjecucion = false
-        console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
+        
 
     } catch (error) {
         validaEjecucion = false
