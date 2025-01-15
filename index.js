@@ -234,7 +234,7 @@ ejecutar = async () => {
                             vpnMbGastados: consumo,
                             "vpnplusConnected": true 
                         })
-                        console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(consumo-megasGastados)/1024000} \nGasto total: ${consumo / 1024000} MB`);
+                        console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(megasGastados-consumos[cliente])/1024000} \nGasto total: ${consumo / 1024000} MB`);
                         console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
                         consumos[cliente] = megasGastados
 
