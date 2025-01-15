@@ -47,7 +47,16 @@ server.on('connected', async () => {
 
 
     //////poniendo a todos en ofline para poner solo los conectados en online
-    let user = (await server.call('getusers', { vpn: true }))
+    let user = (await server.call('getusers', { vpn: true },{ fields:{
+        _id: 1,
+        vpnip: 1,
+        username: 1,
+        vpnMbGastados: 1,
+        vpnplusConnected: 1,
+        vpn: 1,
+        desconectarVPN: 1,
+    },sort: { vpnip: 1 } }))
+    console.log("USUARIOS: ", user);
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
 
 });
@@ -102,7 +111,15 @@ ejecutar = async () => {
 
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
-            let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true });
+            let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true },{ fields:{
+                _id: 1,
+                vpnip: 1,
+                username: 1,
+                vpnMbGastados: 1,
+                vpnplusConnected: 1,
+                vpn: 1,
+                desconectarVPN: 1,
+            },sort: { vpnip: 1 } });
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
@@ -112,7 +129,7 @@ ejecutar = async () => {
             ////////GUARDANDO PARA EL ARCHIVO OPTIONS LOS USUARIOS CON EL SERVICIO
             await fs.writeFile("/etc/ppp/chap-secrets", result, (err) => {
                 if (err) console.error("Error: " + err);
-                console.info("Datos Guardados Correctamente!!!")
+                console.info("Datos Guardados Correctamente en el file de USUARIOS Y PASSS!!!")
             });
 
 
@@ -184,7 +201,15 @@ ejecutar = async () => {
                     /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
                     ///////SUMANDOLE EL CONSUMO AL USUARIO
                     let ip = cliente.split(".")[3]
-                    let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
+                    let user = (await server.call('getusers', { vpnip: Number(ip) },{ fields:{
+                        _id: 1,
+                        vpnip: 1,
+                        username: 1,
+                        vpnMbGastados: 1,
+                        vpnplusConnected: 1,
+                        vpn: 1,
+                        desconectarVPN: 1,
+                    },sort: { vpnip: 1 } }))[0]
 
                     console.log("CONECTADO: ", user ? user.username + "-" + cliente : cliente);
 
@@ -194,19 +219,22 @@ ejecutar = async () => {
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
                     }else{
+                        ///////SI EL USUARIO NO ESTA EN EL ARREGLO DE CONSUMOS LO AGREGA
                         listadeclientesconectados.push(cliente)
+
+                        ///////Calcular consumo del usuario
+                        let consumo = user.vpnMbGastados
+                            ? (consumos[cliente]
+                                ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
+                                : user.vpnMbGastados + megasGastados)
+                            : consumos[cliente]
+
                         await server.call('setOnlineVPN', user._id, {
-                            vpnMbGastados: user.vpnMbGastados ?
-                                (consumos[cliente]
-                                    ? (user.vpnMbGastados + (megasGastados - consumos[cliente]))
-                                    : user.vpnMbGastados + megasGastados)
-                                : consumos[cliente]
+                            vpnMbGastados: consumo,
+                            "vpnplusConnected": true 
                         })
-    
-                        ////// CONECTANDO EL USUARIO EN VIDKAR
-                        await server.call('setOnlineVPN', user._id, { "vpnplusConnected": true })
-    
-                        console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1000000}`);
+                        console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1024000}`);
+                        console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
                         consumos[cliente] = megasGastados
 
                         
@@ -233,7 +261,15 @@ ejecutar = async () => {
                 array1.map(async (a) => {
                     await console.log("DESCONECTADO: " + a);
                     let ip = await a.split(".")[3]
-                    let user = (await server.call('getusers', { vpnip: Number(ip) }))[0]
+                    let user = (await server.call('getusers', { vpnip: Number(ip) },{ fields:{
+                        _id: 1,
+                        vpnip: 1,
+                        username: 1,
+                        vpnMbGastados: 1,
+                        vpnplusConnected: 1,
+                        vpn: 1,
+                        desconectarVPN: 1,
+                    },sort: { vpnip: 1 } }))[0]
 
                     /////eliminando usuario del arreglo de los conectados
                     delete consumos[a]
