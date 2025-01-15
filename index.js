@@ -78,7 +78,7 @@ cron
         async () => {
             if(server.connected){
                 if(validaEjecucion == false){
-                    ejecutar()
+                    await ejecutar();
                 }else{
                     console.log("Se intento ejecutar pero ya esta en ejecucion el codigo");
                 }
@@ -216,7 +216,7 @@ ejecutar = async () => {
 
                     //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
                     if(user.vpn == false || user.desconectarVPN){
-                        server.call('updateUsersAll', user._id, { desconectarVPN: false })
+                        await server.call('updateUsersAll', user._id, { desconectarVPN: false })
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
                     }else{
@@ -259,7 +259,7 @@ ejecutar = async () => {
 
             ////// QUITA LOS USUARIOS DESCONECTADOS Y ACTUALIZA LOS MEGAS EN VIDKAR
             array1.length > 0 && (
-                array1.map(async (a) => {
+               await array1.map(async (a) => {
                     await console.log("DESCONECTADO: " + a);
                     let ip = await a.split(".")[3]
                     let user = (await server.call('getusers', { vpnip: Number(ip) },{ fields:{
@@ -287,17 +287,17 @@ ejecutar = async () => {
             //limpia cache de conectados
             listadeclientesconectados = []
 
-
+            // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
+            validaEjecucion = false
+            console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
         });
 
-        // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
+       
 
     } catch (error) {
         validaEjecucion = false
         console.error(error);
     }
-    validaEjecucion = false
-    console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
 }
 
 
