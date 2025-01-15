@@ -34,6 +34,9 @@ const ejecutarScript = async (script) => {
 /////LISTA DE MEGAS CONSUMIDOS POR USUARIOS
 var consumos = {}
 
+/////FLAG PARA SABER SI es valido que se ejecute el codigo/////
+var validaEjecucion = false;
+
 /////LISTA DE USUARIOS CONECTADOS
 var listadeclientesconectados = []
 
@@ -64,10 +67,16 @@ cron
     .schedule(
         "0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
         async () => {
-            server.connected ?
-                ejecutar()
-
-                : server.connect()
+            if(server.connected){
+                if(validaEjecucion == false){
+                    ejecutar()
+                }else{
+                    console.log("Se intento ejecutar pero ya esta en ejecucion el codigo");
+                }
+            }else{
+                console.log("Intentando conectar nuevamente");
+                server.connect()
+            }
         },
         {
             scheduled: true,
@@ -78,15 +87,14 @@ cron
 
 ejecutar = async () => {
     try {
-
+        validaEjecucion = true
+        console.log("Ejecutando codigo de monitoreo de VPN FLAG: " + validaEjecucion);
 
         let userSub = server.subscribe("user", { vpnip: 2 });
         await userSub.ready();
         ////!!!aqui se actualiza LOS MEGAS PARA VIDKAR!!!
 
 
-        /////TAREA DE 10 SEGUNDOS
-        console.log('EJECUTANDO');
 
         /////DEVOLVER RESULTADO DE IFCONFIG
         var executeCmd = require('./ifconfig/ifconfig-linux/executeCmd');
@@ -247,8 +255,11 @@ ejecutar = async () => {
         // server.call('setOnlineVPN', user._id, { "vpnplusConnected": disponible })
 
     } catch (error) {
+        validaEjecucion = false
         console.error(error);
     }
+    validaEjecucion = false
+    console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
 }
 
 
