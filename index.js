@@ -99,14 +99,14 @@ ejecutar = async () => {
         validaEjecucion = true
         console.log("Ejecutando codigo de monitoreo de VPN FLAG: " + validaEjecucion);
 
-        let userSub = server.subscribe("user", { vpnip: 2 });
+        let userSub = await server.subscribe("user", { vpnip: 2 });
         await userSub.ready();
         ////!!!aqui se actualiza LOS MEGAS PARA VIDKAR!!!
 
 
 
         /////DEVOLVER RESULTADO DE IFCONFIG
-        var executeCmd = require('./ifconfig/ifconfig-linux/executeCmd');
+        var executeCmd = await require('./ifconfig/ifconfig-linux/executeCmd');
         executeCmd().then(async (element) => {
 
             ///////creando variables para listar los usuarios que tienen VPN2MB
@@ -119,6 +119,7 @@ ejecutar = async () => {
                 vpnplusConnected: 1,
                 vpn: 1,
                 desconectarVPN: 1,
+                passvpn:1
             },sort: { vpnip: 1 } });
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
@@ -233,7 +234,7 @@ ejecutar = async () => {
                             vpnMbGastados: consumo,
                             "vpnplusConnected": true 
                         })
-                        console.log(`CLIENTE: ${cliente} gasto: ${megasGastados / 1024000}`);
+                        console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(consumo-megasGastados)/1024000} \nGasto total: ${consumo / 1024000} MB`);
                         console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
                         consumos[cliente] = megasGastados
 
@@ -269,6 +270,7 @@ ejecutar = async () => {
                         vpnplusConnected: 1,
                         vpn: 1,
                         desconectarVPN: 1,
+                        passvpn:1
                     },sort: { vpnip: 1 } }))[0]
 
                     /////eliminando usuario del arreglo de los conectados
