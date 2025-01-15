@@ -15,14 +15,14 @@ var server = new simpleDDP(opts);
 const ejecutarScript = async (script) => {
     var exec = require('child_process').exec;
     return new Promise(function (resolve, reject) {
-        exec(script, function(error, stdout, stderr) {
+        exec(script, function (error, stdout, stderr) {
             if (error) {
                 reject(error);
-            }else {
-                if(stderr){
-                resolve(stderr);
-                }else{
-                resolve(stdout);
+            } else {
+                if (stderr) {
+                    resolve(stderr);
+                } else {
+                    resolve(stdout);
                 }
             }
         });
@@ -47,15 +47,18 @@ server.on('connected', async () => {
 
 
     //////poniendo a todos en ofline para poner solo los conectados en online
-    let user = (await server.call('getusers', { vpn: true },{ fields:{
-        _id: 1,
-        vpnip: 1,
-        username: 1,
-        vpnMbGastados: 1,
-        vpnplusConnected: 1,
-        vpn: 1,
-        desconectarVPN: 1,
-    },sort: { vpnip: 1 } }))
+    let user = (await server.call('getusers', { vpn: true }, {
+        fields: {
+            _id: 1,
+            vpnip: 1,
+            username: 1,
+            vpnMbGastados: 1,
+            vpnplusConnected: 1,
+            vpn: 1,
+            desconectarVPN: 1,
+            passvpn: 1
+        }, sort: { vpnip: 1 }
+    }))
     console.log("USUARIOS: ", user);
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
 
@@ -76,13 +79,13 @@ cron
     .schedule(
         "0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
         async () => {
-            if(server.connected){
-                if(validaEjecucion == false){
+            if (server.connected) {
+                if (validaEjecucion == false) {
                     await ejecutar();
-                }else{
+                } else {
                     console.log("Se intento ejecutar pero ya esta en ejecucion el codigo");
                 }
-            }else{
+            } else {
                 console.log("Intentando conectar nuevamente");
                 server.connect()
             }
@@ -111,16 +114,18 @@ ejecutar = async () => {
 
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
-            let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true },{ fields:{
-                _id: 1,
-                vpnip: 1,
-                username: 1,
-                vpnMbGastados: 1,
-                vpnplusConnected: 1,
-                vpn: 1,
-                desconectarVPN: 1,
-                passvpn:1
-            },sort: { vpnip: 1 } });
+            let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true }, {
+                fields: {
+                    _id: 1,
+                    vpnip: 1,
+                    username: 1,
+                    vpnMbGastados: 1,
+                    vpnplusConnected: 1,
+                    vpn: 1,
+                    desconectarVPN: 1,
+                    passvpn: 1
+                }, sort: { vpnip: 1 }
+            });
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
@@ -139,8 +144,8 @@ ejecutar = async () => {
 
             /////LISTA LAS INTERFACES
             let listInterfaces = Object.keys(element)
-            
-            
+
+
             // si estado es PENTIENTE_A_REINICIAR 
             //ejecutarScript(`service ipsec restart`)
             //ejecutarScript(`service xl2tpd restart`)
@@ -157,45 +162,45 @@ ejecutar = async () => {
             let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
             let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
 
-            console.log("ipsServer",ipServer);
+            console.log("ipsServer", ipServer);
             let serverVPN = (await server.call('getServer', ipServer))
-            await server.call('actualizarEstadoServer', serverVPN._id,{lastUpdate:new Date()}) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
-            
-            if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR" ) {
+            await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
 
-                if(!serverVPN.idUserSolicitandoReinicio){
+            if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR") {
+
+                if (!serverVPN.idUserSolicitandoReinicio) {
                     console.log("idUserSolicitandoReinicio = null - SERVERVPN: ", serverVPN)
                     await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
-                    
-                }else{
+
+                } else {
                     console.log("SERVERVPN: ", serverVPN)
                     let idUserSolicitandoReinicio = serverVPN.idUserSolicitandoReinicio;
                     await server.call('actualizarEstadoServer', serverVPN._id) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
                     let script = `service ipsec restart && service xl2tpd restart`
                     try {
-                        
+
                         let returnScript = await ejecutarScript(script)
                         let mensaje = "Script ejecutado: " + script + "\nstdout: " + returnScript + "\nIP SERVER: " + ipServer;
                         console.log(mensaje);
                         server.call('registrarLog', 'Script ejecutado', idUserSolicitandoReinicio, 'SERVER', mensaje)
                     } catch (error) {
-                        console.log('error',error)
+                        console.log('error', error)
                         server.call('registrarLog', 'ERROR Script ejecutado', idUserSolicitandoReinicio, 'SERVER', error)
                     }
                 }
-               
+
             }
 
-            
+
             let ppp = await listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
-            
+
             console.log("Se va a recorrer las interfaces para calcular lo gastado");
             //ppp.forEach cambiado a for para poder hacer un await
             for (let index = 0; index < ppp.length; index++) {
-            
+
                 const elementppp = ppp[index];
-            
+
                 try {
                     // console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                     ///////SELECCIONA LA IP DEL CLIENTE
@@ -207,24 +212,27 @@ ejecutar = async () => {
                     /////LISTA LOS CONECTADOS PARA COMPARARLOS CON EL REGISTRO DE MEGAS PARA SABER CUAL SE DESCONECTO
                     ///////SUMANDOLE EL CONSUMO AL USUARIO
                     let ip = cliente.split(".")[3]
-                    let user = (await server.call('getusers', { vpnip: Number(ip) },{ fields:{
-                        _id: 1,
-                        vpnip: 1,
-                        username: 1,
-                        vpnMbGastados: 1,
-                        vpnplusConnected: 1,
-                        vpn: 1,
-                        desconectarVPN: 1,
-                    },sort: { vpnip: 1 } }))[0]
+                    let user = (await server.call('getusers', { vpnip: Number(ip) }, {
+                        fields: {
+                            _id: 1,
+                            vpnip: 1,
+                            username: 1,
+                            vpnMbGastados: 1,
+                            vpnplusConnected: 1,
+                            vpn: 1,
+                            desconectarVPN: 1,
+                            passvpn: 1
+                        }, sort: { vpnip: 1 }
+                    }))[0]
 
                     console.log("CONECTADO: ", user ? user.username + "-" + cliente : cliente);
 
                     //SI ESTA BLOQUEADO LA VPN LO DESCONECTA
-                    if(user.vpn == false || user.desconectarVPN){
+                    if (user.vpn == false || user.desconectarVPN) {
                         await server.call('updateUsersAll', user._id, { desconectarVPN: false })
                         console.log("FORZANDO DESCONEXION DE USUARIO: " + user.username)
                         await ejecutarScript('ip link delete ' + elementppp);
-                    }else{
+                    } else {
                         ///////SI EL USUARIO NO ESTA EN EL ARREGLO DE CONSUMOS LO AGREGA
                         listadeclientesconectados.push(cliente)
 
@@ -237,16 +245,16 @@ ejecutar = async () => {
 
                         await server.call('setOnlineVPN', user._id, {
                             vpnMbGastados: consumo,
-                            "vpnplusConnected": true 
+                            "vpnplusConnected": true
                         })
-                        console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(megasGastados-consumos[cliente])/1024000} \nGasto total: ${consumo / 1024000} MB`);
+                        console.log(`CLIENTE: ${cliente}, Usuario: ${user.username} \nGasto desde su conexion: ${megasGastados / 1024000}\nGasto a sumar: ${(megasGastados - consumos[cliente]) / 1024000} \nGasto total: ${consumo / 1024000} MB`);
                         console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
-                        consumos[cliente] = megasGastados                        
+                        consumos[cliente] = megasGastados
                     }
                 } catch (error) {
                     console.log(error)
                 }
-            
+
             }
 
             ////////DEVUELVE LA IP DE LOS DESCONECTADOS
@@ -256,19 +264,21 @@ ejecutar = async () => {
 
             ////// QUITA LOS USUARIOS DESCONECTADOS Y ACTUALIZA LOS MEGAS EN VIDKAR
             array1.length > 0 && (
-               await array1.map(async (a) => {
+                await array1.map(async (a) => {
                     await console.log("DESCONECTADO: " + a);
                     let ip = await a.split(".")[3]
-                    let user = (await server.call('getusers', { vpnip: Number(ip) },{ fields:{
-                        _id: 1,
-                        vpnip: 1,
-                        username: 1,
-                        vpnMbGastados: 1,
-                        vpnplusConnected: 1,
-                        vpn: 1,
-                        desconectarVPN: 1,
-                        passvpn:1
-                    },sort: { vpnip: 1 } }))[0]
+                    let user = (await server.call('getusers', { vpnip: Number(ip) }, {
+                        fields: {
+                            _id: 1,
+                            vpnip: 1,
+                            username: 1,
+                            vpnMbGastados: 1,
+                            vpnplusConnected: 1,
+                            vpn: 1,
+                            desconectarVPN: 1,
+                            passvpn: 1
+                        }, sort: { vpnip: 1 }
+                    }))[0]
 
                     /////eliminando usuario del arreglo de los conectados
                     delete consumos[a]
@@ -289,7 +299,7 @@ ejecutar = async () => {
             console.log("Ejecucion finalizada FLAG: " + validaEjecucion);
         });
 
-       
+
 
     } catch (error) {
         validaEjecucion = false
