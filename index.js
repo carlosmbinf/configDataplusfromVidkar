@@ -189,8 +189,9 @@ ejecutar = async () => {
             
             let ppp = await listInterfaces.filter(interface => interface.includes("ppp"))
             //////RECORRE TODAS LAS INTERFACES
-
-            await ppp.map(async (elementppp) => {
+            
+            console.log("Se va a recorrer las interfaces para calcular lo gastado");
+            await ppp.for(async (elementppp) => {
                 try {
                     // console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                     ///////SELECCIONA LA IP DEL CLIENTE
@@ -296,6 +297,7 @@ ejecutar = async () => {
 
     } catch (error) {
         validaEjecucion = false
+        console.log("Ejecucion finalizada FLAG: " + validaEjecucion + " en ERROR");
         console.error(error);
     }
 }
