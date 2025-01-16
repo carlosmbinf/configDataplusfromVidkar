@@ -45,6 +45,7 @@ server.on('connected', async () => {
     // do something
     console.log("Conectado");
 
+    
 
     //////poniendo a todos en ofline para poner solo los conectados en online
     let user = (await server.call('getusers', { vpn: true }, {
@@ -62,20 +63,7 @@ server.on('connected', async () => {
     console.log("USUARIOS: ", user);
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
 
-});
-
-server.on('disconnected', () => {
-    // for example show alert to user
-    console.info("Desconectado");
-});
-
-server.on('error', (e) => {
-    // global errors from server
-    console.error(e);
-});
-
-
-cron
+    cron
     .schedule(
         "*/20 0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
         async () => {
@@ -96,6 +84,24 @@ cron
         }
     )
     .start();
+
+});
+
+server.on('disconnected', () => {
+    // for example show alert to user
+    console.info("Desconectado");
+    validaEjecucion = false
+    cron.getTasks().forEach(element => {
+        element.stop()
+    })
+});
+
+server.on('error', (e) => {
+    // global errors from server
+    console.error(e);
+});
+
+
 
 ejecutar = async () => {
     try {
