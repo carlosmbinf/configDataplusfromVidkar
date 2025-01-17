@@ -9,7 +9,26 @@ let opts = {
     reconnectInterval: 10000,
 };
 var server = new simpleDDP(opts);
-
+var task = cron
+.schedule(
+    "*/20 0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
+    async () => {
+        if (server.connected) {
+            if (validaEjecucion == false) {
+                await ejecutar();
+            } else {
+                console.log("Se intento ejecutar pero ya esta en ejecucion el codigo");
+            }
+        } else {
+            console.log("Intentando conectar nuevamente");
+            server.connect()
+        }
+    },
+    {
+        scheduled: true,
+        timezone: "America/Havana",
+    }
+);
 
 
 const ejecutarScript = async (script) => {
@@ -62,28 +81,8 @@ server.on('connected', async () => {
     }))
     console.log("USUARIOS: ", user);
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
-
-    cron
-    .schedule(
-        "*/20 0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
-        async () => {
-            if (server.connected) {
-                if (validaEjecucion == false) {
-                    await ejecutar();
-                } else {
-                    console.log("Se intento ejecutar pero ya esta en ejecucion el codigo");
-                }
-            } else {
-                console.log("Intentando conectar nuevamente");
-                server.connect()
-            }
-        },
-        {
-            scheduled: true,
-            timezone: "America/Havana",
-        }
-    )
-    .start();
+     
+    task.start();
 
 });
 
@@ -91,14 +90,14 @@ server.on('disconnected', () => {
     // for example show alert to user
     console.info("Desconectado");
     validaEjecucion = false
-    cron.getTasks().forEach(element => {
-        element.stop()
-    })
+    task.stop();
 });
 
 server.on('error', (e) => {
     // global errors from server
     console.error(e);
+    task.stop();
+    task.start();
 });
 
 
