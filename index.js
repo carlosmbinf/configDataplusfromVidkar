@@ -168,8 +168,8 @@ ejecutar = async () => {
             let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
 
             console.log("ipsServer", ipServer);
-            let serverVPN = (await server.call('getServer', ipServer))
-            await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+            let serverVPN = await server.call('getServer', ipServer)
+            serverVPN && await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
 
             if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR") {
 
