@@ -126,7 +126,7 @@ ejecutar = async () => {
              /////SELECCIONA LAS INTERFACES DE SERVIDOR
              let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
              let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
-
+             console.log("ipsServer", ipServer);
              
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
@@ -180,7 +180,7 @@ ejecutar = async () => {
             // }
 
            
-            console.log("ipsServer", ipServer);
+            
             let serverVPN = await server.call('getServer', ipServer)
             serverVPN && await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
 
