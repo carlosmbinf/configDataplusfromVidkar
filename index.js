@@ -150,12 +150,11 @@ ejecutar = async () => {
             //seteando los usuarios aprobados por la config del servidor
             users && ( usuariosVPN = users.filter(user => usuariosAprobados.includes(user.username)));
             
-            console.log("usuarios permitidos en el servidor" + (usuariosVPN && usuariosVPN.map(user => user.username).join("--")))
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
             });
-            await console.log(result);
+            await console.log("usuarios permitidos en el servidor:\n",result);
 
             ////////GUARDANDO PARA EL ARCHIVO OPTIONS LOS USUARIOS CON EL SERVICIO
             await fs.writeFile("/etc/ppp/chap-secrets", result, (err) => {
