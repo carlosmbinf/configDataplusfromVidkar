@@ -146,10 +146,10 @@ ejecutar = async () => {
 
             console.log("usuariosAprobados en la config del servidor: " + (servers && (servers.details?servers.details:"")), usuariosAprobados);
 
-            //seteando los usuarios aprobados por el servidor
+            //seteando los usuarios aprobados por la config del servidor
             users && ( usuariosVPN = users.filter(user => usuariosAprobados.includes(user.username)));
             
-            console.log("usuarios permitidos en el servidor" + (users && users.map(user => user.username).join("--")))
+            console.log("usuarios permitidos en el servidor" + (usuariosVPN && usuariosVPN.map(user => user.username).join("--")))
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
