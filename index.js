@@ -117,6 +117,10 @@ ejecutar = async () => {
         var executeCmd = await require('./ifconfig/ifconfig-linux/executeCmd');
         executeCmd().then(async (element) => {
 
+            
+            /////LISTA LAS INTERFACES
+            let listInterfaces = Object.keys(element)
+
              /////SELECCIONA LAS INTERFACES DE SERVIDOR
              let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
              let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
@@ -160,9 +164,6 @@ ejecutar = async () => {
 
 
 
-
-            /////LISTA LAS INTERFACES
-            let listInterfaces = Object.keys(element)
 
 
             // si estado es PENTIENTE_A_REINICIAR 
