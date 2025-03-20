@@ -117,9 +117,15 @@ ejecutar = async () => {
         var executeCmd = await require('./ifconfig/ifconfig-linux/executeCmd');
         executeCmd().then(async (element) => {
 
+             /////SELECCIONA LAS INTERFACES DE SERVIDOR
+             let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
+             let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
+
+             
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
-            let usuariosVPN = await server.call('getusers', { "vpn2mb": true, "vpn": true }, {
+            let usuariosVPN = []
+            let users = await server.call('getusers', { "vpn2mb": true, "vpn": true }, {
                 fields: {
                     _id: 1,
                     vpnip: 1,
@@ -131,6 +137,13 @@ ejecutar = async () => {
                     passvpn: 1
                 }, sort: { vpnip: 1 }
             });
+            let servers = await server.call("getusersPermitidos",{ip:ipServer},{fields: {usuariosAprobados:1}})
+            let usuariosAprobados = servers && (server.usuariosAprobados || [])
+
+            console.log("usuariosAprobados en servidor: " + (servers?servers.details:""), usuariosAprobados);
+
+            users && ( usuariosVPN = users.filter(user => usuariosAprobados.includes(user.username)));
+
             // console.log("usuariosVPN", usuariosVPN);
             await usuariosVPN.forEach((usuarioVPN, index) => {
                 result = usuarioVPN.username ? `${result}${usuarioVPN.username} l2tpd ${usuarioVPN.passvpn ? usuarioVPN.passvpn : "123"} ${usuarioVPN.vpnip ? '192.168.18.' + usuarioVPN.vpnip : "*"}\n` : result
@@ -163,10 +176,7 @@ ejecutar = async () => {
 
             // }
 
-            /////SELECCIONA LAS INTERFACES DE SERVIDOR
-            let interfaceServer = await listInterfaces.filter(interface => interface.includes("ens"))
-            let ipServer = interfaceServer && element[interfaceServer] && element[interfaceServer].inet && element[interfaceServer].inet.addr
-
+           
             console.log("ipsServer", ipServer);
             let serverVPN = await server.call('getServer', ipServer)
             serverVPN && await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
