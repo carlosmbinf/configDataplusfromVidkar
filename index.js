@@ -108,6 +108,8 @@ ejecutar = async () => {
         console.log("Ejecutando codigo de monitoreo de VPN FLAG: " + validaEjecucion);
 
         let userSub = await server.subscribe("user", { vpnip: 2 });
+        let ServerSub = await server.subscribe("servers", { });
+        await ServerSub.ready();
         await userSub.ready();
         ////!!!aqui se actualiza LOS MEGAS PARA VIDKAR!!!
 
