@@ -142,9 +142,9 @@ ejecutar = async () => {
                 }, sort: { vpnip: 1 }
             });
             let servers = await server.call("getusersPermitidos",{ip:ipServer},{fields: {usuariosAprobados:1}})
-            let usuariosAprobados = servers && (server.usuariosAprobados || [])
+            let usuariosAprobados = servers && (servers.usuariosAprobados || [])
 
-            console.log("usuariosAprobados en servidor: " + (servers?servers.details:""), usuariosAprobados);
+            console.log("usuariosAprobados en servidor: " + (servers && (servers.details?servers.details:"")), usuariosAprobados);
 
             //seteando los usuarios aprobados por el servidor
             users && ( usuariosVPN = users.filter(user => usuariosAprobados.includes(user.username)));
