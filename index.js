@@ -143,9 +143,8 @@ ejecutar = async () => {
                     passvpn: 1
                 }, sort: { vpnip: 1 }
             });
-            let servers = await server.call("getusersPermitidos",{ip:ipServer},{fields: {usuariosAprobados:1}})
-            let usuariosAprobados = servers && (servers.usuariosAprobados || [])
-
+            let servers = await server.call("getusersPermitidos",{ip:ipServer})
+            let usuariosAprobados = servers ? (servers.length > 0 ? servers[0].usuariosAprobados : []) : []
             console.log("usuariosAprobados en la config del servidor: " + (servers && (servers.details?servers.details:"")), usuariosAprobados);
 
             //seteando los usuarios aprobados por la config del servidor
