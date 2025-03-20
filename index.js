@@ -142,6 +142,7 @@ ejecutar = async () => {
 
             console.log("usuariosAprobados en servidor: " + (servers?servers.details:""), usuariosAprobados);
 
+            //seteando los usuarios aprobados por el servidor
             users && ( usuariosVPN = users.filter(user => usuariosAprobados.includes(user.username)));
 
             // console.log("usuariosVPN", usuariosVPN);
