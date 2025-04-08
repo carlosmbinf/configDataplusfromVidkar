@@ -182,7 +182,7 @@ ejecutar = async () => {
            
             
             let serverVPN = await server.call('getServer', ipServer)
-            serverVPN && await server.call('actualizarEstadoServer', serverVPN._id, { lastUpdate: new Date() }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
+            serverVPN && await server.call('actualizarEstadoServer', serverVPN._id, { estado: 'ACTIVO' }) //REINICIANDO VALOR A ACTIVO y idUserSolicitandoReinicio = null
 
             if (serverVPN && serverVPN.estado == "PENDIENTE_A_REINICIAR") {
 
