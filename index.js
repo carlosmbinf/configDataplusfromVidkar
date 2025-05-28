@@ -80,7 +80,9 @@ server.on('connected', async () => {
         }, sort: { vpnip: 1 }
     }))
     console.log("USUARIOS: ", user);
-    await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false }))
+    await user.map(elemento => server.call('setOnlineVPN', elemento._id, { "vpnplusConnected": false,
+         conexionesVPN: null
+     }))
      
     task.start();
 
@@ -239,7 +241,8 @@ ejecutar = async () => {
                             vpnplusConnected: 1,
                             vpn: 1,
                             desconectarVPN: 1,
-                            passvpn: 1
+                            passvpn: 1,
+                            conexionesVPN: 1
                         }, sort: { vpnip: 1 }
                     }))[0]
 
@@ -266,6 +269,12 @@ ejecutar = async () => {
                             vpnMbGastados: consumo,
                             "vpnplusConnected": true
                         })
+                        
+                        //aqui agrega la ip del servidor conectado si no existe
+                        await server.call('setOnlineVPN', user._id, {
+                            $addToSet: { conexionesVPN: ipServer }
+                        });
+
                         console.log("Se actualizo el usuario: " + user.username + " con " + consumo / 1024000 + " MB")
                         consumos[cliente] = megasGastados
                     }
@@ -294,17 +303,25 @@ ejecutar = async () => {
                             vpnplusConnected: 1,
                             vpn: 1,
                             desconectarVPN: 1,
-                            passvpn: 1
+                            passvpn: 1,
+                            conexionesVPN: 1
                         }, sort: { vpnip: 1 }
                     }))[0]
 
                     /////eliminando usuario del arreglo de los conectados
                     delete consumos[a]
 
-                    /////desconectando usuario en VIDKAR
-                    await server.call('setOnlineVPN', user._id, { "vpnplusConnected": false })
-
-
+                    if (user && user.conexionesVPN && user.conexionesVPN.includes(ipServer)) {
+                         /////desconectando usuario en VIDKAR y eliminandolo de conexionesVPN
+                        await server.call('setOnlineVPN', user._id, {
+                            "vpnplusConnected": false,
+                            $pull: { conexionesVPN: ipServer }
+                        });
+                        console.log(`Se eliminó la IP ${ipServer} de conexionesVPN del usuario ${user.username}`);
+                    }else{
+                         /////desconectando usuario en VIDKAR
+                        await server.call('setOnlineVPN', user._id, { "vpnplusConnected": false })
+                    }
 
                 })
             )
