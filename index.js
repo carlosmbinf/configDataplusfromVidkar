@@ -83,7 +83,7 @@ server.on('connected', async () => {
     await user.map(elemento => server.call('setOnlineVPN', elemento._id, { 
         $set: {
             "vpnplusConnected": false,
-         conexionesVPN: null
+         conexionesVPN: []
         }
         
      }))
