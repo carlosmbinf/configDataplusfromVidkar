@@ -125,6 +125,9 @@ ejecutar = async () => {
         var executeCmd = await require('./ifconfig/ifconfig-linux/executeCmd');
         executeCmd().then(async (element) => {
 
+            console.log("Datos traidos de los commandos: \n",element);
+
+            // return;
             
             /////LISTA LAS INTERFACES
             let listInterfaces = Object.keys(element)
@@ -228,7 +231,7 @@ ejecutar = async () => {
                 try {
                     // console.log(`elemento ${elementppp}: ` + JSON.stringify(element[elementppp]))
                     ///////SELECCIONA LA IP DEL CLIENTE
-                    let cliente = element[elementppp].inet.destination
+                    let cliente = element[elementppp].inet.addr
 
                     //////MEGAS GASTADOS
                     let megasGastados = element[elementppp].tx.bytes
