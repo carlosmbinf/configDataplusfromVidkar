@@ -140,7 +140,7 @@ ejecutar = async () => {
             ///////creando variables para listar los usuarios que tienen VPN2MB
             let result = ""
             let usuariosVPN = []
-            let users = await server.call('getusers', { "vpn2mb": true, "vpn": true }, {
+            let users = await server.call('getusers', { "vpn": true }, {
                 fields: {
                     _id: 1,
                     vpnip: 1,
