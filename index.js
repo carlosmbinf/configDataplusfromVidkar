@@ -11,7 +11,7 @@ let opts = {
 var server = new simpleDDP(opts);
 var task = cron
 .schedule(
-    "*/20 0-59 0-23 1-31 1-12 *", //     */20 0-59 0-23 1-31 1-12 *
+    "0 * * * * *", //     */20 0-59 0-23 1-31 1-12 *
     async () => {
         if (server.connected) {
             if (validaEjecucion == false) {
